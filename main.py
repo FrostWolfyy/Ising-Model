@@ -4,9 +4,17 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 
+# Variables 
+
+size = 16
+iterations = 1000
+kb = 1
+t = 1
+beta = kb * t
 #np.random.seed(24032003)
-system = Grille(16)
-test = Ising(system, 1000, 0.001)
+
+system = Grille(size)
+test = Ising(system, iterations, beta)
 mag,en,grid = test.run()
 
 

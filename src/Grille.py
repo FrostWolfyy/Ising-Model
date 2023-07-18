@@ -20,7 +20,7 @@ class Grille:
         return mag
     
     # Running algorithm --> Swap 1 random spin
-    def metropolis(self, temperature):
+    def metropolis(self, beta):
 
         i = np.random.randint(0,self.taille)
         j = np.random.randint(0,self.taille)
@@ -30,6 +30,6 @@ class Grille:
         # Change the value of the spin as a function of the energy difference
         if deltaE < 0.0:
             self.lattice[i,j] *= -1
-        elif np.random.random() < np.exp( - deltaE / temperature):
+        elif np.random.random() < np.exp( - deltaE / beta):
             self.lattice[i,j] *= -1
 

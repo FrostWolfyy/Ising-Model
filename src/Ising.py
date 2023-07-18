@@ -1,10 +1,10 @@
 from src.Grille import Grille 
 
 class Ising():
-    def __init__(self, Grille, iterations, temperature):
+    def __init__(self, Grille, iterations, beta):
         self.Grille = Grille 
         self.iterations = iterations
-        self.temperature = temperature
+        self.beta = beta
 
     def run(self):
         allMag = []
@@ -20,7 +20,7 @@ class Ising():
         
             allMag.append(mag)
             allEnergy.append(energy)
-            self.Grille.metropolis(self.temperature)
+            self.Grille.metropolis(self.beta)
             allGrid.append(self.Grille.lattice.copy())
          
         return allMag, allEnergy, allGrid
