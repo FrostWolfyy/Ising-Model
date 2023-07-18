@@ -1,9 +1,9 @@
 from src.Grille import Grille
 from src.Ising import Ising
 
-system = Grille(4)
+system = Grille(16)
 
-test = Ising(system,100, 1)
+test = Ising(system,100, 0.01)
 
 mag,en = test.run()
 

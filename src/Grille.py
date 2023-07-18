@@ -10,7 +10,6 @@ class Grille:
 
     # Energy of 1 spin
     def energy(self, i,j):
-        print(i, " ", j)
         size = self.lattice.shape[0]
         energy = - self.lattice[i, j] * (self.lattice[i, (j - 1) % size] + self.lattice[i, (j + 1)% size ] + self.lattice[(i - 1) % size, j] + self.lattice[(i + 1) % size, j])
         return energy
