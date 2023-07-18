@@ -7,7 +7,7 @@ class Ising:
     def run(self):
         allMag = []
         allEnergy = []
-
+        allGrid = []
         for i in range (self.iterations):
             mag = self.Grille.average_magnetization()
             energy = 0 
@@ -18,7 +18,7 @@ class Ising:
         
             allMag.append(mag)
             allEnergy.append(energy)
-
             self.Grille.metropolis(self.temperature)
-
-        return allMag, allEnergy
+            allGrid.append(self.Grille.lattice)
+            
+        return allMag, allEnergy, allGrid
