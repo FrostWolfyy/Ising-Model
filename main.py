@@ -5,8 +5,8 @@ import matplotlib.animation as animation
 import numpy as np
 
 #np.random.seed(24032003)
-system = Grille(4)
-test = Ising(system, 2, 1)
+system = Grille(16)
+test = Ising(system, 1000, 0.001)
 mag,en,grid = test.run()
 
 
@@ -33,15 +33,12 @@ plt.tight_layout()
 plt.savefig("out/Mag_En_Iterations.pdf")
 ##############################
 
-
-print(grid)
-print(mag)
 # Generate example data
 # Create a figure and axis
 fig, ax = plt.subplots()
 
 # Initialize the image plot
-image = ax.imshow(grid[0], cmap='viridis')
+image = ax.imshow(grid[0], cmap='binary')
 
 # Update function for each frame
 
@@ -50,7 +47,7 @@ def update(frame):
     return image,
 
 # Create the animation
-ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=200)
+ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=1)
 
 # Save the animation as a GIF
 ani.save('out/animation.gif', writer='pillow')
