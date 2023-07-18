@@ -7,12 +7,7 @@ class Grille:
         self.lattice = np.random.choice([-1,1],size=(taille,taille))
 
     def energy(i,j):
-        size = Grille.shape[0]
-        left = Grille[i, (j - 1) ]
-        right = Grille[i, (j + 1) ]
-        up = Grille[(i - 1) , j]
-        down = Grille[(i + 1), j]
-        energy = - Grille[i, j] * (left + right + up + down)
+        energy = - Grille[i, j] * (Grille[i, (j - 1) ] + Grille[i, (j + 1) ] + Grille[(i - 1) , j] + Grille[(i + 1), j])
         return energy
     
     def average_magnetization(self):
