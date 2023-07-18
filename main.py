@@ -11,7 +11,7 @@ iterations = 1000
 kb = 1
 t = 1
 beta = kb * t
-#np.random.seed(24032003)
+np.random.seed(240303)
 
 system = Grille(size)
 test = Ising(system, iterations, beta)
