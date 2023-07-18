@@ -1,10 +1,12 @@
 from src.Grille import Grille
+from src.Ising import Ising
 
 system = Grille(4)
-print(system.lattice)
-print(system.average_magnetization())
 
-system.metropolis(1, 0, 0)
+test = Ising(system,100, 1)
 
-print(system.lattice)
-print(system.average_magnetization())
+mag,en = test.run()
+
+print(mag)
+print("          ")
+print(en)
