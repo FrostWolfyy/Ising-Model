@@ -6,8 +6,8 @@ import matplotlib.animation as animation
 import numpy as np
 
 # Variables 
-size = 64
-iterations = 10000
+size = 12
+iterations = 50000
 kb = 1
 t = 0.05
 beta = kb * t
@@ -15,7 +15,7 @@ beta = kb * t
 
 mag=[]
 betaList = []
-for i in range (1,60):
+for i in range (1,120):
     beta = kb * t
     print(i)
     beta *= i
@@ -27,7 +27,7 @@ for i in range (1,60):
 
 plt.figure()
 plt.plot(betaList, mag, linestyle= "None", marker=".")
-plt.show()
+plt.savefig("out/Mag_Temp.pdf")
 #
 # Graphs
 #
