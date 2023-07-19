@@ -1,62 +1,75 @@
 from src.Grille import Grille
 from src.Ising import Ising
+from src.Ising2 import Ising2
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 
 # Variables 
-
-size = 16
-iterations = 1000
+size = 64
+iterations = 10000
 kb = 1
-t = 1
+t = 0.05
 beta = kb * t
-np.random.seed(240303)
-
-system = Grille(size)
-test = Ising(system, iterations, beta)
-mag,en,grid = test.run()
 
 
+mag=[]
+betaList = []
+for i in range (1,60):
+    beta = kb * t
+    print(i)
+    beta *= i
+    np.random.seed(24032003)
+    system = Grille(size)
+    test = Ising2(system, iterations, beta)
+    betaList.append(beta)
+    mag.append(test.run())
+
+plt.figure()
+plt.plot(betaList, mag, linestyle= "None", marker=".")
+plt.show()
 #
 # Graphs
 #
 
 ############################
-plt.figure(figsize=(10, 4))
 
-plt.subplot(1, 2, 1)
-plt.plot(mag)
-plt.xlabel('Iteration')
-plt.ylabel('Magnetization')
-plt.title('2D Ising Model - Magnetization')
+# plt.figure(figsize=(10, 4))
 
-plt.subplot(1, 2, 2)
-plt.plot(en)
-plt.xlabel('Iteration')
-plt.ylabel('Energy')
-plt.title('2D Ising Model - Energy')
+# plt.subplot(1, 2, 1)
+# plt.plot(mag)
+# plt.xlabel('Iteration')
+# plt.ylabel('Magnetization')
+# plt.title('2D Ising Model - Magnetization')
 
-plt.tight_layout()
-plt.savefig("out/Mag_En_Iterations.pdf")
+# plt.subplot(1, 2, 2)
+# plt.plot(en)
+# plt.xlabel('Iteration')
+# plt.ylabel('Energy')
+# plt.title('2D Ising Model - Energy')
+
+# plt.tight_layout()
+# plt.savefig("out/Mag_En_Iterations.pdf")
+
 ##############################
 
-# Generate example data
-# Create a figure and axis
-fig, ax = plt.subplots()
+# Animation Script
 
-# Initialize the image plot
-image = ax.imshow(grid[0], cmap='binary')
 
-# Update function for each frame
+# fig, ax = plt.subplots()
 
-def update(frame):
-    image.set_array(grid[frame])
-    return image,
+# # Initialize the image plot
+# image = ax.imshow(grid[0], cmap='binary')
 
-# Create the animation
-ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=1)
+# # Update function for each frame
 
-# Save the animation as a GIF
-ani.save('out/animation.gif', writer='pillow')
+# def update(frame):
+#     image.set_array(grid[frame])
+#     return image,
+
+# # Create the animation
+# ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=1)
+
+# # Save the animation as a GIF
+# ani.save('out/animation.gif', writer='pillow')
 
