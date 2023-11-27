@@ -25,7 +25,7 @@ class Grille:
         i = np.random.randint(0,self.taille)
         j = np.random.randint(0,self.taille)
 
-        deltaE = -2 * J * self.energy(i,j)
+        deltaE = -2 * self.energy(i,j,J)
 
         # Change the value of the spin as a function of the energy difference
         if deltaE < 0.0:
