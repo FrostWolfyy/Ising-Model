@@ -33,8 +33,8 @@ class Ising():
 
             for j in range (0, self.Grille.taille):
                 for k in range (0, self.Grille.taille):
-                    energy += self.Grille.energy(j,k) / 2
+                    energy += self.Grille.energy(j,k, self.J) / 2
         
-            self.Grille.metropolis(self.beta)
+            self.Grille.metropolis(self.beta,self.J)
 
         return self.Grille.average_magnetization()
