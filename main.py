@@ -11,13 +11,14 @@ iterations = 10000
 kb = 100
 t = 0.05
 beta = kb * t
+J = 1
 
 np.random.seed(24032003)
 
 system = Grille(size)
-test = Ising(system, iterations, beta)
+test = Ising(system, iterations, beta, J)
 
-allMag, allEnergy, grid = test.run()
+allMag, allEnergy, grid = test.runAnim()
 
 # # Evolution of Magnetization Script
 
@@ -29,9 +30,9 @@ allMag, allEnergy, grid = test.run()
 #     beta *= i
 #     np.random.seed(24032003)
 #     system = Grille(size)
-#     test = Ising2(system, iterations, beta)
+#     test = Ising(system, iterations, beta, J)
 #     betaList.append(beta)
-#     mag.append(test.run())
+#     mag.append(test.runMag())
 
 # plt.figure()
 # plt.plot(betaList, mag, linestyle= "None", marker=".")
