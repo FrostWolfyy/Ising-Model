@@ -43,26 +43,26 @@ import numpy as np
 
 
 # Variables
-size = 16
-iterations = 10000
-kb = 0.1
+size = 12
+iterations = 50000
+kb = 1
 t = 0.05
 J = 1
-
+beta = kb * t
 # Evolution of Magnetization Script
 
 mag=[]
 betaList = []
 for i in range (1,120):
-    beta = kb * t
     print(i)
+    beta = kb * t
     beta *= i
     np.random.seed(24032003)
     system = Grille(size)
     test = Ising(system, iterations, beta, J)
     betaList.append(beta)
     mag.append(test.runMag())
-
+print(betaList)
 plt.figure()
 plt.plot(betaList, mag, linestyle= "None", marker=".")
 plt.savefig("out/Mag_Temp.pdf")
