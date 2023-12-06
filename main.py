@@ -129,7 +129,7 @@ plt.figure()
 plt.plot(betaList, mag5, marker=".", color = "black")
 plt.plot(betaList, mag10, marker="x", color = "black")
 plt.plot(betaList, mag20, marker="+", color = "black")
-plt.plot(betaList, mag40, marker="-", color = "black")
+plt.plot(betaList, mag40, marker="_", color = "black")
 plt.savefig("out/Mag_Temp.pdf")
 
 
