@@ -43,15 +43,16 @@ import numpy as np
 
 
 # Variables
-size = 12
-iterations = 50000
+size = 5
+iterations = 10000
 kb = 1
 t = 0.05
 J = 1
 beta = kb * t
+
 # Evolution of Magnetization Script
 
-mag=[]
+mag5=[]
 betaList = []
 for i in range (1,120):
     print(i)
@@ -61,10 +62,74 @@ for i in range (1,120):
     system = Grille(size)
     test = Ising(system, iterations, beta, J)
     betaList.append(beta)
-    mag.append(test.runMag())
-print(betaList)
+    mag5.append(test.runMag())
+
+
+# Variables
+size = 10
+iterations = 10000
+kb = 1
+t = 0.05
+J = 1
+beta = kb * t
+
+mag10=[]
+betaList = []
+for i in range (1,120):
+    print(i)
+    beta = kb * t
+    beta *= i
+    np.random.seed(24032003)
+    system = Grille(size)
+    test = Ising(system, iterations, beta, J)
+    betaList.append(beta)
+    mag10.append(test.runMag())
+
+# Variables
+size = 20
+iterations = 10000
+kb = 1
+t = 0.05
+J = 1
+beta = kb * t
+
+mag20=[]
+betaList = []
+for i in range (1,120):
+    print(i)
+    beta = kb * t
+    beta *= i
+    np.random.seed(24032003)
+    system = Grille(size)
+    test = Ising(system, iterations, beta, J)
+    betaList.append(beta)
+    mag20.append(test.runMag())
+
+# Variables
+size = 40
+iterations = 10000
+kb = 1
+t = 0.05
+J = 1
+beta = kb * t
+
+mag40=[]
+betaList = []
+for i in range (1,120):
+    print(i)
+    beta = kb * t
+    beta *= i
+    np.random.seed(24032003)
+    system = Grille(size)
+    test = Ising(system, iterations, beta, J)
+    betaList.append(beta)
+    mag40.append(test.runMag())
+
 plt.figure()
-plt.plot(betaList, mag, linestyle= "None", marker=".")
+plt.plot(betaList, mag5, marker=".", color = "black")
+plt.plot(betaList, mag10, marker="x", color = "black")
+plt.plot(betaList, mag20, marker="+", color = "black")
+plt.plot(betaList, mag40, marker="-", color = "black")
 plt.savefig("out/Mag_Temp.pdf")
 
 
