@@ -62,48 +62,73 @@ def runAnim(lattice, iterations, size, J, beta):
 def runMag(lattice, iterations, size, beta, J):
     for i in range (iterations):
         mag = average_magnetization(lattice, size)
-        energy = 0 
+        Energy = 0 
 
         for j in range (0, size):
             for k in range (0, size):
-                energy += energy(lattice, j,k, size, J) / 2
+                Energy += energy(lattice, j,k, size, J) / 2
         
-        metropolis(lattice, beta, J)
+        metropolis(lattice, beta, size, J)
     return average_magnetization(lattice, size)
 
 # Variables
-
-size = 8
-iterations = 1000
+size = 10
+iterations = 10000
 kb = 1
 t = 0.05
 J = 1
 beta = kb * t
 
-# Initialize Lattice
+# Evolution of Magnetization Script
 
-grille = np.random.choice(np.array([-1, 1]), size=(size, size))
+mag5= np.zeros(iterations)
+betaList = np.zeros(iterations)
+for i in range (1,120):
+    print(i)
+    beta = kb * t
+    beta *= i
+    np.random.seed(24032003)
+    grille = np.random.choice(np.array([-1, 1]), size=(size, size))
+    betaList[i-1] = beta
+    mag5[i-1] = runMag(grille, iterations, size, beta, J)
 
-allMag, allEnergy, grid = runAnim(grille, iterations, size, beta, J)
+plt.figure()
+plt.plot(betaList, mag5, marker=".", color = "black")
 
-# Animation Script
+plt.savefig("out/Mag_Temp.pdf")
+# Variables
+
+# size = 8
+# iterations = 1000
+# kb = 1
+# t = 0.05
+# J = 1
+# beta = kb * t
+
+# # Initialize Lattice
+
+# grille = np.random.choice(np.array([-1, 1]), size=(size, size))
+
+# allMag, allEnergy, grid = runAnim(grille, iterations, size, beta, J)
+
+# # Animation Script
 
 
-fig, ax = plt.subplots()
+# fig, ax = plt.subplots()
 
-# Initialize the image plot
-image = ax.imshow(grid[0], cmap='binary')
+# # Initialize the image plot
+# image = ax.imshow(grid[0], cmap='binary')
 
-# Update function for each frame
+# # Update function for each frame
 
-def update(frame):
-    image.set_array(grid[frame])
-    return image,
+# def update(frame):
+#     image.set_array(grid[frame])
+#     return image,
 
-# Create the animation
-ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=1)
+# # Create the animation
+# ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=1)
 
-# Save the animation as a GIF
-ani.save('out/animation.gif', writer='pillow')
+# # Save the animation as a GIF
+# ani.save('out/animation.gif', writer='pillow')
 
-print("Terminé")
+# print("Terminé")

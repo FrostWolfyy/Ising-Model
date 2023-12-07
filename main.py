@@ -4,42 +4,42 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 
-# Variables
-size = 8
-iterations = 1000
-kb = 1
-t = 0.05
-beta = kb * t
-J = 1
+# # Variables
+# size = 8
+# iterations = 1000
+# kb = 1
+# t = 0.05
+# beta = kb * t
+# J = 1
 
-np.random.seed(24032003)
+# np.random.seed(24032003)
 
-system = Grille(size)
-test = Ising(system, iterations, beta, J)
+# system = Grille(size)
+# test = Ising(system, iterations, beta, J)
 
-allMag, allEnergy, grid = test.runAnim()
+# allMag, allEnergy, grid = test.runAnim()
 
-# Animation Script
+# # Animation Script
 
 
-fig, ax = plt.subplots()
+# fig, ax = plt.subplots()
 
-# Initialize the image plot
-image = ax.imshow(grid[0], cmap='binary')
+# # Initialize the image plot
+# image = ax.imshow(grid[0], cmap='binary')
 
-# Update function for each frame
+# # Update function for each frame
 
-def update(frame):
-    image.set_array(grid[frame])
-    return image,
+# def update(frame):
+#     image.set_array(grid[frame])
+#     return image,
 
-# Create the animation
-ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=1)
+# # Create the animation
+# ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=1)
 
-# Save the animation as a GIF
-ani.save('out/animation.gif', writer='pillow')
+# # Save the animation as a GIF
+# ani.save('out/animation.gif', writer='pillow')
 
-print("Terminé")
+# print("Terminé")
 
 
 # # Variables
@@ -65,25 +65,25 @@ print("Terminé")
 #     mag5.append(test.runMag())
 
 
-# # Variables
-# size = 10
-# iterations = 10000
-# kb = 1
-# t = 0.05
-# J = 1
-# beta = kb * t
+# Variables
+size = 10
+iterations = 10000
+kb = 1
+t = 0.05
+J = 1
+beta = kb * t
 
-# mag10=[]
-# betaList = []
-# for i in range (1,120):
-#     print(i)
-#     beta = kb * t
-#     beta *= i
-#     np.random.seed(24032003)
-#     system = Grille(size)
-#     test = Ising(system, iterations, beta, J)
-#     betaList.append(beta)
-#     mag10.append(test.runMag())
+mag10=[]
+betaList = []
+for i in range (1,120):
+    print(i)
+    beta = kb * t
+    beta *= i
+    np.random.seed(24032003)
+    system = Grille(size)
+    test = Ising(system, iterations, beta, J)
+    betaList.append(beta)
+    mag10.append(test.runMag())
 
 # # Variables
 # size = 20
@@ -125,12 +125,12 @@ print("Terminé")
 #     betaList.append(beta)
 #     mag40.append(test.runMag())
 
-# plt.figure()
+plt.figure()
 # plt.plot(betaList, mag5, marker=".", color = "black")
-# plt.plot(betaList, mag10, marker="x", color = "black")
+plt.plot(betaList, mag10, marker="x", color = "black")
 # plt.plot(betaList, mag20, marker="+", color = "black")
 # plt.plot(betaList, mag40, marker="_", color = "black")
-# plt.savefig("out/Mag_Temp.pdf")
+plt.savefig("out/Mag_Temp.pdf")
 
 
 # # Graphs
