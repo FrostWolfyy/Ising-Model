@@ -73,7 +73,7 @@ def runMag(lattice, iterations, size, beta, J):
 
 # Variables
 size = 10
-iterations = 10000
+iterations = 1000000
 kb = 1
 t = 0.05
 J = 1
@@ -81,16 +81,17 @@ beta = kb * t
 
 # Evolution of Magnetization Script
 
-mag5= np.zeros(iterations)
-betaList = np.zeros(iterations)
-for i in range (1,120):
+mag5= np.zeros(150)
+betaList = np.zeros(150)
+for i in range (1,151):
     print(i)
     beta = kb * t
     beta *= i
-    np.random.seed(24032003)
+    np.random.seed(1)
     grille = np.random.choice(np.array([-1, 1]), size=(size, size))
     betaList[i-1] = beta
     mag5[i-1] = runMag(grille, iterations, size, beta, J)
+print(betaList)
 
 plt.figure()
 plt.plot(betaList, mag5, marker=".", color = "black")
