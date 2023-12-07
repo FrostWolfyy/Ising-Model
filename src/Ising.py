@@ -21,8 +21,8 @@ class Ising():
         
             allMag.append(mag)
             allEnergy.append(energy)
-            self.Grille.metropolis(self.beta, self.J)
             allGrid.append(self.Grille.lattice.copy())
+            self.Grille.metropolis(self.beta, self.J)
          
         return allMag, allEnergy, allGrid
     

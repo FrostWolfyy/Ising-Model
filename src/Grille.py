@@ -9,17 +9,20 @@ class Grille:
         self.lattice = np.random.choice([-1,1],size=(taille,taille))
 
     # Energy of 1 spin
+
     def energy(self, i,j, J): # J = Coupling Constant
         size = self.lattice.shape[0]
         energy = - J * self.lattice[i, j] * (self.lattice[i, (j - 1) % size] + self.lattice[i, (j + 1)% size ] + self.lattice[(i - 1) % size, j] + self.lattice[(i + 1) % size, j])
         return energy
     
     # Average magnetization computation
+ 
     def average_magnetization(self):
         mag = np.sum(self.lattice) / self.taille**2 # Taille ** 2 = Number of spins
-        return mag
+        return np.abs(mag)
     
     # Running algorithm --> Swap 1 random spin
+
     def metropolis(self, beta, J):
 
         i = np.random.randint(0,self.taille)
