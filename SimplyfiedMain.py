@@ -72,8 +72,8 @@ def runMag(lattice, iterations, size, beta, J):
     return average_magnetization(lattice, size)
 
 # Variables
-size = 10
-iterations = 1000000
+size = 16
+iterations = 500000
 kb = 1
 t = 0.05
 J = 1
@@ -87,15 +87,16 @@ for i in range (1,151):
     print(i)
     beta = kb * t
     beta *= i
-    np.random.seed(1)
+    np.random.seed(24032003)
     grille = np.random.choice(np.array([-1, 1]), size=(size, size))
     betaList[i-1] = beta
     mag5[i-1] = runMag(grille, iterations, size, beta, J)
 print(betaList)
 
 plt.figure()
-plt.plot(betaList, mag5, marker=".", color = "black")
-
+plt.plot(betaList, mag5, linestyle="None", marker=".", color = "black")
+plt.xlabel("Temperature")
+plt.ylabel("Magnetization")
 plt.savefig("out/Mag_Temp.pdf")
 # Variables
 
