@@ -35,7 +35,6 @@ def susceptibility(magnetizations, beta):
      return ( np.mean(magnetizations**2) - np.mean(magnetizations)**2 ) / beta
 
 @njit
-
 def runAnim(lattice, iterations, size, J, beta):
         
     allMag = np.zeros(iterations)
@@ -71,56 +70,67 @@ def runMag(lattice, iterations, size, beta, J):
         metropolis(lattice, beta, size, J)
     return magnetization(lattice, size)
 
-def runAll(size, TempNumber, initialT):
-    allT = np.array()
-    allMag = np.array()
+@njit
+def runAll(size, TempNumber, initialT, J, kb):
+
+    allT = np.empty(TempNumber)
+    allMag = np.empty(TempNumber)
+    allKhi = np.empty(TempNumber)
+
     for i in range(TempNumber):
-        np.append(allT, initialT * (i + 1))
+        allT[i] = initialT * (i + 1)
+        beta = initialT * (i + 1) * kb
+        print(i)
 
-        GrilleUp = np.ones((size,size))
+        GrilleUp = np.ones((size, size))
         GrilleRandom = np.random.choice(np.array([-1, 1]), size=(size, size))
-        tempMagUp = np.zeros(1)
 
-        tempMagRandom = np.zeros(1)
-        while():  
+        tempMagUp = np.empty(0)
+        tempMagRandom = np.empty(0)
+
+        tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
+        tempMagRandom = np.append(tempMagRandom, magnetization(GrilleRandom, size))
+
+        while np.abs(np.mean(tempMagRandom) - np.mean(tempMagUp)) > 0.1:
+            print(np.abs(np.mean(tempMagRandom) - np.mean(tempMagUp)))
             metropolis(GrilleUp, beta, size, J)
             metropolis(GrilleRandom, beta, size, J)
+            tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
+            tempMagRandom = np.append(tempMagRandom, magnetization(GrilleRandom, size))
 
-        np.append(allMag, np.mean(magnetization(GrilleUp, size), magnetization(GrilleRandom, size)))
-    return allT, allMag
+        meanMag = (magnetization(GrilleUp, size) + magnetization(GrilleRandom, size)) / 2
+        allMag[i] = meanMag
+        allKhi[i] = susceptibility(tempMagRandom, beta)
 
+    return allT, allMag, allKhi
+
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Variables
 size = 64
-iterations = 100000
+iterations = 10
 kb = 1
-Temp = 5
+Temp = 1
 J = 1
 beta = kb * Temp
 
-# Equilibrium Arrival After T MTC
-
-# count = 0
-# GrilleUp = np.ones((size,size))
-# GrilleRandom = np.random.choice(np.array([-1, 1]), size=(size, size))
-# magUp = [magnetization(GrilleUp, size)]
-# magRandom = [magnetization(GrilleRandom, size)]
-# t_MTC = [count / size**2]
-# while (np.abs(magUp[count] - magRandom[count]) > 0.0001):
-    
-#     metropolis(GrilleUp, beta, size, J)
-#     metropolis(GrilleRandom, beta, size, J)
-#     count += 1
-#     magUp.append(magnetization(GrilleUp, size))
-#     magRandom.append(magnetization(GrilleRandom, size))
-#     t_MTC.append(count / size**2)
+# allT, allMag, allKhi = runAll(size, iterations, Temp, J, kb)
 
 # plt.figure()
-# plt.plot(t_MTC, magUp, linestyle="None", marker=".", color = "black")
-# plt.plot(t_MTC, magRandom, linestyle="None", marker=".", color = "black")
-# plt.xlabel("t_MTC")
+# plt.plot(allT, allMag, linestyle="None", marker=".", color = "black")
+# plt.xlabel("Temperzture")
 # plt.ylabel("Magnetization")
-# plt.savefig("out/Mag.pdf")
+# plt.savefig("out/MagAll.pdf")
 
+
+# plt.figure()
+# plt.plot(allT, allKhi, linestyle="None", marker=".", color = "black")
+# plt.xlabel("Temperzture")
+# plt.ylabel("Susceptibility")
+# plt.savefig("out/Khi.pdf")
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ # Equilibrium Arrival After T MTC
 
 count = 0
 GrilleUp = np.ones((size,size))
@@ -128,22 +138,46 @@ GrilleRandom = np.random.choice(np.array([-1, 1]), size=(size, size))
 magUp = [magnetization(GrilleUp, size)]
 magRandom = [magnetization(GrilleRandom, size)]
 t_MTC = [count / size**2]
-for i in range(iterations):
-    print(i)
+while (np.abs(magUp[count] - magRandom[count]) > 0.01):
+    print(np.abs(magUp[count] - magRandom[count]))
     metropolis(GrilleUp, beta, size, J)
     metropolis(GrilleRandom, beta, size, J)
+    count += 1
     magUp.append(magnetization(GrilleUp, size))
     magRandom.append(magnetization(GrilleRandom, size))
-    t_MTC.append(i / size**2)
+    t_MTC.append(count / size**2)
 
 plt.figure()
 plt.plot(t_MTC, magUp, linestyle="None", marker=".", color = "blue")
 plt.plot(t_MTC, magRandom, linestyle="None", marker=".", color = "black")
 plt.xlabel("t_MTC")
-plt.xscale("log")
 plt.ylabel("Magnetization")
-plt.savefig("out/Mag1.pdf")
+plt.savefig("out/Mag.pdf")
 
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# count = 0
+# GrilleUp = np.ones((size,size))
+# GrilleRandom = np.random.choice(np.array([-1, 1]), size=(size, size))
+# magUp = [magnetization(GrilleUp, size)]
+# magRandom = [magnetization(GrilleRandom, size)]
+# t_MTC = [count / size**2]
+# for i in range(iterations):
+#     print(i)
+#     metropolis(GrilleUp, beta, size, J)
+#     metropolis(GrilleRandom, beta, size, J)
+#     magUp.append(magnetization(GrilleUp, size))
+#     magRandom.append(magnetization(GrilleRandom, size))
+#     t_MTC.append(i / size**2)
+
+# plt.figure()
+# plt.plot(t_MTC, magUp, linestyle="None", marker=".", color = "blue")
+# plt.plot(t_MTC, magRandom, linestyle="None", marker=".", color = "black")
+# plt.xlabel("t_MTC")
+# plt.xscale("log")
+# plt.ylabel("Magnetization")
+# plt.savefig("out/Mag1.pdf")
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Evolution of Magnetization Script
 
 # mag5= np.zeros(150)
@@ -164,6 +198,8 @@ plt.savefig("out/Mag1.pdf")
 # plt.xlabel("Temperature")
 # plt.ylabel("Magnetization")
 # plt.savefig("out/Mag_Temp.pdf")
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Variables
 
@@ -201,3 +237,5 @@ plt.savefig("out/Mag1.pdf")
 # ani.save('out/animation.gif', writer='pillow')
 
 # print("Terminé")
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
