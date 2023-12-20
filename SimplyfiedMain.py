@@ -80,10 +80,10 @@ def runAll(size, TempNumber, initialT, J, kb):
     allKhi = np.empty(TempNumber)
 
     for i in range(TempNumber):
-        allT[i] = initialT * (i + 1)
-        beta = initialT * (i + 1) * kb
+        allT[i] = initialT - (i * 0.03)
+        beta = (initialT - (i * 0.03)) * kb
         print(i)
-
+        np.random.seed(24032003)
         GrilleUp = np.ones((size, size))
         GrilleRandom = np.random.choice(np.array([-1, 1]), size=(size, size))
 
@@ -93,7 +93,7 @@ def runAll(size, TempNumber, initialT, J, kb):
         tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
         tempMagRandom = np.append(tempMagRandom, magnetization(GrilleRandom, size))
 
-        while np.abs(np.mean(tempMagRandom[-10:]) - np.mean(tempMagUp[-10:])) > 0.05:
+        while np.abs(np.mean(tempMagRandom[-100:]) - np.mean(tempMagUp[-100:])) > 0.01:
             metropolis(GrilleUp, beta, size, J)
             metropolis(GrilleRandom, beta, size, J)
             tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
@@ -101,7 +101,7 @@ def runAll(size, TempNumber, initialT, J, kb):
 
         meanMag = (magnetization(GrilleUp, size) + magnetization(GrilleRandom, size)) / 2
         allMag[i] = meanMag
-        allKhi[i] = susceptibility(tempMagRandom, beta)
+        allKhi[i] = susceptibility(tempMagUp, beta)
 
     return allT, allMag, allKhi
 
@@ -149,7 +149,7 @@ def runAll(size, TempNumber, initialT, J, kb):
 # Variables
 
 # size = 32
-# iterations = 5000000
+# iterations = 20000000
 # kb = 1
 # Temp = 0.05
 # J = 1
@@ -171,31 +171,31 @@ def runAll(size, TempNumber, initialT, J, kb):
 # plt.plot(betaList, mag5, linestyle="None", marker=".", color = "black")
 # plt.xlabel("Temperature")
 # plt.ylabel("Magnetization")
-# plt.savefig("out/Mag_Temp1.pdf")
+# plt.savefig("out/Mag_Temp3.pdf")
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Variables
-# size = 5
-# iterations = 150
-# kb = 1
-# Temp = 0.05
-# J = 1
-# beta = kb * Temp
+size = 16
+iterations = 80
+kb = 1
+Temp = 4
+J = 1
+beta = kb * Temp
 
-# allT, allMag, allKhi = runAll(size, iterations, Temp, J, kb)
+allT, allMag, allKhi = runAll(size, iterations, Temp, J, kb)
 
-# plt.figure()
-# plt.plot(allT, allMag, linestyle="None", marker=".", color = "black")
-# plt.xlabel("Temperzture")
-# plt.ylabel("Magnetization")
-# plt.savefig("out/MagAll.pdf")
+plt.figure()
+plt.plot(allT, allMag, linestyle="None", marker=".", color = "black")
+plt.xlabel("Temperzture")
+plt.ylabel("Magnetization")
+plt.savefig("out/MagAll.pdf")
 
 
-# plt.figure()
-# plt.plot(allT, allKhi, linestyle="None", marker=".", color = "black")
-# plt.xlabel("Temperzture")
-# plt.ylabel("Susceptibility")
-# plt.savefig("out/Khi.pdf")
+plt.figure()
+plt.plot(allT, allKhi, linestyle="None", marker=".", color = "black")
+plt.xlabel("Temperzture")
+plt.ylabel("Susceptibility")
+plt.savefig("out/Khi.pdf")
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  # Equilibrium Arrival After T MTC
 
