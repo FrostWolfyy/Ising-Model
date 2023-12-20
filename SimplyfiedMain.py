@@ -3,6 +3,7 @@ import matplotlib.animation as animation
 import numpy as np
 from numba import njit
 
+# Calculte Energy of site (i,j) Working Good.
 @njit
 def energy(lattice, i, j, size, J):
 
@@ -10,6 +11,8 @@ def energy(lattice, i, j, size, J):
     energy = - J * lattice[i, j] * (lattice[i, (j - 1) % size] + lattice[i, (j + 1) % size] + lattice[(i - 1) % size, j] + lattice[(i + 1) % size, j])
 
     return energy
+
+# Monte Carlo Step, Working Good.
 
 @njit
 def metropolis(lattice, beta, size, J):
@@ -25,10 +28,14 @@ def metropolis(lattice, beta, size, J):
     elif np.random.random() < np.exp( - deltaE / beta):
         lattice[i,j] *= -1
 
+# Calculate the magnetization of a given spin grid, Working Good
+
 @njit
 def magnetization(lattice, size):
     mag = np.sum(lattice) / size**2 # Taille ** 2 = Number of spins
     return np.abs(mag)
+
+# Calculate the magnetic susceptibility for a given evolution of magnetization over time, Working Good.
 
 @njit
 def susceptibility(magnetizations, beta):
@@ -52,7 +59,6 @@ def runAnim(lattice, iterations, size, J, beta):
         allMag[i] = mag
         allEnergy[i] = Energy
         allGrid[i] = lattice.copy()
-
         metropolis(lattice, beta, size, J)
          
     return allMag, allEnergy, allGrid
@@ -91,8 +97,7 @@ def runAll(size, TempNumber, initialT, J, kb):
         tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
         tempMagRandom = np.append(tempMagRandom, magnetization(GrilleRandom, size))
 
-        while np.abs(np.mean(tempMagRandom) - np.mean(tempMagUp)) > 0.1:
-            print(np.abs(np.mean(tempMagRandom) - np.mean(tempMagUp)))
+        while np.abs(np.mean(tempMagRandom[-10:]) - np.mean(tempMagUp[-10:])) > 0.05:
             metropolis(GrilleUp, beta, size, J)
             metropolis(GrilleRandom, beta, size, J)
             tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
@@ -104,16 +109,52 @@ def runAll(size, TempNumber, initialT, J, kb):
 
     return allT, allMag, allKhi
 
+# Animation of spin changing direction over time
 
+# Variables
+
+size = 8
+iterations = 1000
+kb = 1
+t = 0.05
+J = 1
+beta = kb * t
+
+np.random.seed(24032003)
+
+# Initialize Lattice
+grille = np.random.choice(np.array([-1, 1]), size=(size, size))
+allMag, allEnergy, grid = runAnim(grille, iterations, size, J, beta)
+
+# Animation Script
+
+fig, ax = plt.subplots()
+
+# Initialize the image plot
+image = ax.imshow(grid[0], cmap='binary')
+
+# Update function for each frame
+
+def update(frame):
+    image.set_array(grid[frame])
+    return image,
+
+# Create the animation
+ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=0.1)
+
+# Save the animation as a GIF
+ani.save('out/animation.gif', writer='pillow')
+
+print("Terminé")
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Variables
-size = 64
-iterations = 10
-kb = 1
-Temp = 1
-J = 1
-beta = kb * Temp
+# size = 5
+# iterations = 150
+# kb = 1
+# Temp = 0.05
+# J = 1
+# beta = kb * Temp
 
 # allT, allMag, allKhi = runAll(size, iterations, Temp, J, kb)
 
@@ -132,27 +173,27 @@ beta = kb * Temp
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  # Equilibrium Arrival After T MTC
 
-count = 0
-GrilleUp = np.ones((size,size))
-GrilleRandom = np.random.choice(np.array([-1, 1]), size=(size, size))
-magUp = [magnetization(GrilleUp, size)]
-magRandom = [magnetization(GrilleRandom, size)]
-t_MTC = [count / size**2]
-while (np.abs(magUp[count] - magRandom[count]) > 0.01):
-    print(np.abs(magUp[count] - magRandom[count]))
-    metropolis(GrilleUp, beta, size, J)
-    metropolis(GrilleRandom, beta, size, J)
-    count += 1
-    magUp.append(magnetization(GrilleUp, size))
-    magRandom.append(magnetization(GrilleRandom, size))
-    t_MTC.append(count / size**2)
+# count = 0
+# GrilleUp = np.ones((size,size))
+# GrilleRandom = np.random.choice(np.array([-1, 1]), size=(size, size))
+# magUp = [magnetization(GrilleUp, size)]
+# magRandom = [magnetization(GrilleRandom, size)]
+# t_MTC = [count / size**2]
+# while (np.abs(magUp[count] - magRandom[count]) > 0.01):
+#     print(np.abs(magUp[count] - magRandom[count]))
+#     metropolis(GrilleUp, beta, size, J)
+#     metropolis(GrilleRandom, beta, size, J)
+#     count += 1
+#     magUp.append(magnetization(GrilleUp, size))
+#     magRandom.append(magnetization(GrilleRandom, size))
+#     t_MTC.append(count / size**2)
 
-plt.figure()
-plt.plot(t_MTC, magUp, linestyle="None", marker=".", color = "blue")
-plt.plot(t_MTC, magRandom, linestyle="None", marker=".", color = "black")
-plt.xlabel("t_MTC")
-plt.ylabel("Magnetization")
-plt.savefig("out/Mag.pdf")
+# plt.figure()
+# plt.plot(t_MTC, magUp, linestyle="None", marker=".", color = "blue")
+# plt.plot(t_MTC, magRandom, linestyle="None", marker=".", color = "black")
+# plt.xlabel("t_MTC")
+# plt.ylabel("Magnetization")
+# plt.savefig("out/Mag.pdf")
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # count = 0
@@ -170,8 +211,8 @@ plt.savefig("out/Mag.pdf")
 #     t_MTC.append(i / size**2)
 
 # plt.figure()
-# plt.plot(t_MTC, magUp, linestyle="None", marker=".", color = "blue")
-# plt.plot(t_MTC, magRandom, linestyle="None", marker=".", color = "black")
+# plt.plot(t_MTC[90000,99999], magUp[90000,99999], linestyle="None", marker=".", color = "blue")
+# plt.plot(t_MTC[90000,99999], magRandom[90000,99999], linestyle="None", marker=".", color = "black")
 # plt.xlabel("t_MTC")
 # plt.xscale("log")
 # plt.ylabel("Magnetization")
@@ -200,42 +241,5 @@ plt.savefig("out/Mag.pdf")
 # plt.savefig("out/Mag_Temp.pdf")
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Variables
-
-# size = 8
-# iterations = 1000
-# kb = 1
-# t = 0.05
-# J = 1
-# beta = kb * t
-
-# # Initialize Lattice
-
-# grille = np.random.choice(np.array([-1, 1]), size=(size, size))
-
-# allMag, allEnergy, grid = runAnim(grille, iterations, size, beta, J)
-
-# # Animation Script
-
-
-# fig, ax = plt.subplots()
-
-# # Initialize the image plot
-# image = ax.imshow(grid[0], cmap='binary')
-
-# # Update function for each frame
-
-# def update(frame):
-#     image.set_array(grid[frame])
-#     return image,
-
-# # Create the animation
-# ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=1)
-
-# # Save the animation as a GIF
-# ani.save('out/animation.gif', writer='pillow')
-
-# print("Terminé")
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
