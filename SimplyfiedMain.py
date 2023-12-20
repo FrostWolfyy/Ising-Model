@@ -93,7 +93,12 @@ def runAll(size, TempNumber, initialT, J, kb):
         tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
         tempMagRandom = np.append(tempMagRandom, magnetization(GrilleRandom, size))
 
-        while np.abs(np.mean(tempMagRandom[-100:]) - np.mean(tempMagUp[-100:])) > 0.01:
+        iterations = 0
+        while np.abs(np.mean(tempMagRandom[-1000:]) - np.mean(tempMagUp[-1000:])) > 0.001:
+            if iterations >= 100000:
+                print("Maximum iterations reached. Exiting loop.")
+                break
+
             metropolis(GrilleUp, beta, size, J)
             metropolis(GrilleRandom, beta, size, J)
             tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
@@ -176,7 +181,7 @@ def runAll(size, TempNumber, initialT, J, kb):
 
 # Variables
 size = 16
-iterations = 80
+iterations = 106
 kb = 1
 Temp = 4
 J = 1
@@ -189,7 +194,6 @@ plt.plot(allT, allMag, linestyle="None", marker=".", color = "black")
 plt.xlabel("Temperzture")
 plt.ylabel("Magnetization")
 plt.savefig("out/MagAll.pdf")
-
 
 plt.figure()
 plt.plot(allT, allKhi, linestyle="None", marker=".", color = "black")
