@@ -41,6 +41,8 @@ def magnetization(lattice, size):
 def susceptibility(magnetizations, beta):
      return ( np.mean(magnetizations**2) - np.mean(magnetizations)**2 ) / beta
 
+# Animate the evolution of spin over time, Working Good.
+
 @njit
 def runAnim(lattice, iterations, size, J, beta):
         
@@ -62,17 +64,11 @@ def runAnim(lattice, iterations, size, J, beta):
         metropolis(lattice, beta, size, J)
          
     return allMag, allEnergy, allGrid
-    
+
+# Calculate the magnetization after a certain number of MTC Step, Working Good.
 @njit
 def runMag(lattice, iterations, size, beta, J):
     for i in range (iterations):
-        mag = magnetization(lattice, size)
-        Energy = 0 
-
-        for j in range (0, size):
-            for k in range (0, size):
-                Energy += energy(lattice, j,k, size, J) / 2
-        
         metropolis(lattice, beta, size, J)
     return magnetization(lattice, size)
 
@@ -113,41 +109,71 @@ def runAll(size, TempNumber, initialT, J, kb):
 
 # Variables
 
-size = 8
-iterations = 1000
-kb = 1
-t = 0.05
-J = 1
-beta = kb * t
+# size = 8
+# iterations = 1000
+# kb = 1
+# t = 0.05
+# J = 1
+# beta = kb * t
 
-np.random.seed(24032003)
+# np.random.seed(24032003)
 
-# Initialize Lattice
-grille = np.random.choice(np.array([-1, 1]), size=(size, size))
-allMag, allEnergy, grid = runAnim(grille, iterations, size, J, beta)
+# # Initialize Lattice
+# grille = np.random.choice(np.array([-1, 1]), size=(size, size))
+# allMag, allEnergy, grid = runAnim(grille, iterations, size, J, beta)
 
-# Animation Script
+# # Animation Script
 
-fig, ax = plt.subplots()
+# fig, ax = plt.subplots()
 
-# Initialize the image plot
-image = ax.imshow(grid[0], cmap='binary')
+# # Initialize the image plot
+# image = ax.imshow(grid[0], cmap='binary')
 
-# Update function for each frame
+# # Update function for each frame
 
-def update(frame):
-    image.set_array(grid[frame])
-    return image,
+# def update(frame):
+#     image.set_array(grid[frame])
+#     return image,
 
-# Create the animation
-ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=0.1)
+# # Create the animation
+# ani = animation.FuncAnimation(fig, update, frames=len(grid), interval=0.1)
 
-# Save the animation as a GIF
-ani.save('out/animation.gif', writer='pillow')
+# # Save the animation as a GIF
+# ani.save('out/animation.gif', writer='pillow')
 
-print("Terminé")
+# print("Terminé")
 
+
+# Evolution of Magnetization Script
+
+# Variables
+
+# size = 32
+# iterations = 5000000
+# kb = 1
+# Temp = 0.05
+# J = 1
+
+# mag5= np.zeros(150)
+# betaList = np.zeros(150)
+
+# for i in range (1,151):
+#     print(i)
+#     beta = kb * Temp
+#     beta *= i
+#     np.random.seed(24032003)
+#     grille = np.random.choice(np.array([-1, 1]), size=(size, size))
+#     betaList[i-1] = beta
+#     mag5[i-1] = runMag(grille, iterations, size, beta, J)
+# print(betaList)
+
+# plt.figure()
+# plt.plot(betaList, mag5, linestyle="None", marker=".", color = "black")
+# plt.xlabel("Temperature")
+# plt.ylabel("Magnetization")
+# plt.savefig("out/Mag_Temp1.pdf")
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 # Variables
 # size = 5
 # iterations = 150
@@ -219,26 +245,7 @@ print("Terminé")
 # plt.savefig("out/Mag1.pdf")
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Evolution of Magnetization Script
 
-# mag5= np.zeros(150)
-# betaList = np.zeros(150)
-
-# for i in range (1,151):
-#     print(i)
-#     beta = kb * Temp
-#     beta *= i
-#     np.random.seed(24032003)
-#     grille = np.random.choice(np.array([-1, 1]), size=(size, size))
-#     betaList[i-1] = beta
-#     mag5[i-1] = runMag(grille, iterations, size, beta, J)
-# print(betaList)
-
-# plt.figure()
-# plt.plot(betaList, mag5, linestyle="None", marker=".", color = "black")
-# plt.xlabel("Temperature")
-# plt.ylabel("Magnetization")
-# plt.savefig("out/Mag_Temp.pdf")
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
