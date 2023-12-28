@@ -154,7 +154,7 @@ def runAll(size, TempNumber, initialT, J, kb):
 # Variables
 
 # size = 32
-# iterations = 20000000
+# iterations = 100000
 # kb = 1
 # Temp = 0.05
 # J = 1
@@ -177,29 +177,65 @@ def runAll(size, TempNumber, initialT, J, kb):
 # plt.xlabel("Temperature")
 # plt.ylabel("Magnetization")
 # plt.savefig("out/Mag_Temp3.pdf")
+
+# Test Susceptibility 
+
+# size = 32
+# iterations = 1000000
+# kb = 1
+# Temp = 0.05
+# J = 1
+
+# Chi = np.zeros(150)
+# betaList = np.zeros(150)
+# for i in range(1,151):
+
+#     allMag = np.zeros(iterations)
+
+#     print(i)
+#     beta = kb * Temp
+#     beta *= i
+
+#     np.random.seed(24032003)
+#     grille = np.ones((size, size))
+
+#     for j in range(iterations):
+#         allMag[j] = magnetization(grille,size)
+#         metropolis(grille, beta, size, J)
+
+#     betaList[i-1] = beta
+#     Chi[i-1] = susceptibility(allMag, beta)
+
+# plt.figure()
+# plt.plot(betaList, Chi, linestyle="None", marker=".", color = "black")
+# plt.xlabel("Temperature")
+# plt.ylabel("Susceptibility")
+# plt.savefig("out/KhiTest.pdf")
+
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Variables
-size = 16
-iterations = 106
-kb = 1
-Temp = 4
-J = 1
-beta = kb * Temp
+# size = 16
+# iterations = 106
+# kb = 1
+# Temp = 4
+# J = 1
+# beta = kb * Temp
 
-allT, allMag, allKhi = runAll(size, iterations, Temp, J, kb)
+# allT, allMag, allKhi = runAll(size, iterations, Temp, J, kb)
 
-plt.figure()
-plt.plot(allT, allMag, linestyle="None", marker=".", color = "black")
-plt.xlabel("Temperzture")
-plt.ylabel("Magnetization")
-plt.savefig("out/MagAll.pdf")
+# plt.figure()
+# plt.plot(allT, allMag, linestyle="None", marker=".", color = "black")
+# plt.xlabel("Temperzture")
+# plt.ylabel("Magnetization")
+# plt.savefig("out/MagAll.pdf")
 
-plt.figure()
-plt.plot(allT, allKhi, linestyle="None", marker=".", color = "black")
-plt.xlabel("Temperzture")
-plt.ylabel("Susceptibility")
-plt.savefig("out/Khi.pdf")
+# plt.figure()
+# plt.plot(allT, allKhi, linestyle="None", marker=".", color = "black")
+# plt.xlabel("Temperzture")
+# plt.ylabel("Susceptibility")
+# plt.savefig("out/Khi.pdf")
+
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  # Equilibrium Arrival After T MTC
 
