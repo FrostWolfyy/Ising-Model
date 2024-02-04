@@ -43,6 +43,11 @@ def susceptibility(magnetizations, beta):
 
 # Animate the evolution of spin over time, Working Good.
 
+
+@njit
+def cumulant(magnetizations):
+     return 1 - ( np.mean(magnetizations**4) / (3 * np.mean(magnetizations**2)**2) )
+ 
 @njit
 def runAnim(lattice, iterations, size, J, beta):
         
@@ -92,13 +97,11 @@ def runAll(size, TempNumber, initialT, J, kb):
 
         tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
         tempMagRandom = np.append(tempMagRandom, magnetization(GrilleRandom, size))
-
         iterations = 0
         while np.abs(np.mean(tempMagRandom[-1000:]) - np.mean(tempMagUp[-1000:])) > 0.001:
             if iterations >= 100000:
                 print("Maximum iterations reached. Exiting loop.")
                 break
-
             metropolis(GrilleUp, beta, size, J)
             metropolis(GrilleRandom, beta, size, J)
             tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
@@ -109,6 +112,47 @@ def runAll(size, TempNumber, initialT, J, kb):
         allKhi[i] = susceptibility(tempMagUp, beta)
 
     return allT, allMag, allKhi
+
+# Test UL
+# Test Susceptibility 
+
+size = 32
+iterations = 1000000
+kb = 1
+Temp = 0.05
+J = 1
+
+Chi = np.zeros(150)
+UL = np.zeros(150)
+betaList = np.zeros(150)
+for i in range(1,151):
+
+    allMag = np.zeros(iterations)
+
+    print(i)
+    beta = kb * Temp
+    beta *= i
+
+    np.random.seed(24032003)
+    grille = np.ones((size, size))
+
+    for j in range(iterations):
+        allMag[j] = magnetization(grille,size)
+        metropolis(grille, beta, size, J)
+
+    betaList[i-1] = beta
+    Chi[i-1] = susceptibility(allMag, beta)
+    UL[i-1] = cumulant(allMag)
+
+
+plt.figure()
+plt.plot(betaList, Chi, linestyle="None", marker=".", color = "black")
+plt.plot(betaList, UL, linestyle="None", marker=".", color = "black")
+
+plt.xlabel("Temperature")
+plt.ylabel("Susceptibility")
+plt.savefig("out/KhiTest.pdf")
+
 
 # Animation of spin changing direction over time
 
@@ -154,7 +198,7 @@ def runAll(size, TempNumber, initialT, J, kb):
 # Variables
 
 # size = 32
-# iterations = 100000
+# iterations = 20000000
 # kb = 1
 # Temp = 0.05
 # J = 1
@@ -177,46 +221,11 @@ def runAll(size, TempNumber, initialT, J, kb):
 # plt.xlabel("Temperature")
 # plt.ylabel("Magnetization")
 # plt.savefig("out/Mag_Temp3.pdf")
-
-# Test Susceptibility 
-
-# size = 32
-# iterations = 1000000
-# kb = 1
-# Temp = 0.05
-# J = 1
-
-# Chi = np.zeros(150)
-# betaList = np.zeros(150)
-# for i in range(1,151):
-
-#     allMag = np.zeros(iterations)
-
-#     print(i)
-#     beta = kb * Temp
-#     beta *= i
-
-#     np.random.seed(24032003)
-#     grille = np.ones((size, size))
-
-#     for j in range(iterations):
-#         allMag[j] = magnetization(grille,size)
-#         metropolis(grille, beta, size, J)
-
-#     betaList[i-1] = beta
-#     Chi[i-1] = susceptibility(allMag, beta)
-
-# plt.figure()
-# plt.plot(betaList, Chi, linestyle="None", marker=".", color = "black")
-# plt.xlabel("Temperature")
-# plt.ylabel("Susceptibility")
-# plt.savefig("out/KhiTest.pdf")
-
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Variables
+# # Variables
 # size = 16
-# iterations = 106
+# iterations = 80
 # kb = 1
 # Temp = 4
 # J = 1
@@ -230,12 +239,12 @@ def runAll(size, TempNumber, initialT, J, kb):
 # plt.ylabel("Magnetization")
 # plt.savefig("out/MagAll.pdf")
 
+
 # plt.figure()
 # plt.plot(allT, allKhi, linestyle="None", marker=".", color = "black")
 # plt.xlabel("Temperzture")
 # plt.ylabel("Susceptibility")
 # plt.savefig("out/Khi.pdf")
-
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  # Equilibrium Arrival After T MTC
 
