@@ -78,15 +78,15 @@ def runMag(lattice, iterations, size, beta, J):
     return magnetization(lattice, size)
 
 @njit
-def runAll(size, TempNumber, initialT, J, kb):
+def runAll(size, Temp, J, kb):
 
-    allT = np.empty(TempNumber)
-    allMag = np.empty(TempNumber)
-    allKhi = np.empty(TempNumber)
+    allT = np.empty(len(Temp))
+    allMag = np.empty(len(Temp))
+    allKhi = np.empty(len(Temp))
 
-    for i in range(TempNumber):
-        allT[i] = initialT - (i * 0.03)
-        beta = (initialT - (i * 0.03)) * kb
+    for i in range(len(Temp)):
+        allT[i] = Temp[i]
+        beta = Temp[i] * kb
         print(i)
         np.random.seed(24032003)
         GrilleUp = np.ones((size, size))
@@ -102,16 +102,16 @@ def runAll(size, TempNumber, initialT, J, kb):
             iterations += 1
             if iterations >= 500000:
                 print("Maximum iterations reached. Exiting loop.")
-
+                
                 break
             metropolis(GrilleUp, beta, size, J)
             metropolis(GrilleRandom, beta, size, J)
             tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
             tempMagRandom = np.append(tempMagRandom, magnetization(GrilleRandom, size))
 
-        meanMag = (magnetization(GrilleUp, size) + magnetization(GrilleRandom, size)) / 2
+        meanMag = (np.mean(tempMagRandom[-10000:]) + np.mean(tempMagUp[-10000:]) ) / 2
         allMag[i] = meanMag
-        allKhi[i] = susceptibility(tempMagUp, beta, size)
+        allKhi[i] = susceptibility(tempMagRandom, beta, size)
 
     return allT, allMag, allKhi
 
@@ -149,7 +149,7 @@ def runAll(size, TempNumber, initialT, J, kb):
 
 # plt.figure()
 # plt.plot(betaList, Chi, linestyle="None", marker=".", color = "black")
-# plt.plot(betaList, UL, linestyle="None", marker=".", color = "black")
+# plt.plot(betaList, UL, linestyle="None", marker=".", color = "black") 
 
 # plt.xlabel("Temperature")
 # plt.ylabel("Susceptibility")
@@ -225,45 +225,45 @@ def runAll(size, TempNumber, initialT, J, kb):
 # plt.savefig("out/Mag_Temp.pdf")
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# size = 10
-# iterations = 110
-# kb = 1
-# Temp = 4
-# J = 1
-# beta = kb * Temp
-# # Variables
+# Variables
+iterations = 110
+kb = 1
+Temp = np.array([0.1, 0.25, 0.40, 0.55, 0.70, 0.85, 1.0, 1.15, 1.30, 1.40, 1.50, 1.60, 1.70, 1.80, 1.90, 2.0, 2.05, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.45, 2.50, 2.55, 2.60, 2.65, 2.70, 2.75, 2.80, 2.90, 3.05, 3.20, 3.35, 3.50, 3.65, 3.80, 3.95 ])
+J = 1
+beta = kb * Temp
 
-# allT10, allMag10, allKhi10 = runAll(size, iterations, Temp, J, kb)
-# size = 20
+size = 10
+allT10, allMag10, allKhi10 = runAll(size, Temp, J, kb)
 
-# allT20, allMag20, allKhi20 = runAll(size, iterations, Temp, J, kb)
-# size = 30
+size = 20
+allT20, allMag20, allKhi20 = runAll(size, Temp, J, kb)
 
-# allT30, allMag30, allKhi30 = runAll(size, iterations, Temp, J, kb)
-# size = 40
+size = 30
+allT30, allMag30, allKhi30 = runAll(size, Temp, J, kb)
 
-# allT40, allMag40, allKhi40 = runAll(size, iterations, Temp, J, kb)
+size = 40
+allT40, allMag40, allKhi40 = runAll(size, Temp, J, kb)
 
-# plt.figure()
-# plt.plot(allT10, allMag10, linestyle="None", marker="o", color = "black", label= "$N = 10$" )
-# plt.plot(allT20, allMag20, linestyle="None", marker="^", color = "blue", label= "$N = 20$")
-# plt.plot(allT30, allMag30, linestyle="None", marker="*", color = "green", label= "$N = 30$")
-# plt.plot(allT40, allMag40, linestyle="None", marker="s", color = "red", label= "$N = 40$")
-# plt.legend()
-# plt.xlabel("$T / T_C$")
-# plt.ylabel("$ M $")
-# plt.savefig("out/MagAll.pdf")
+plt.figure()
+plt.plot(allT10 / 2.27, allMag10, linestyle="None", marker="o", color = "black", label= "$N = 10$" )
+plt.plot(allT20 / 2.27, allMag20, linestyle="None", marker="^", color = "blue", label= "$N = 20$")
+plt.plot(allT30 / 2.27, allMag30, linestyle="None", marker="*", color = "green", label= "$N = 30$")
+plt.plot(allT40 / 2.27, allMag40, linestyle="None", marker="s", color = "red", label= "$N = 40$")
+plt.legend()
+plt.xlabel("$T / T_C$")
+plt.ylabel("$ M $")
+plt.savefig("out/MagAll.pdf")
 
 
-# plt.figure()
-# plt.plot(allT10, allKhi10, linestyle="None", marker="o", color = "black", label= "$N = 10$" )
-# plt.plot(allT20, allKhi20, linestyle="None", marker="^", color = "blue", label= "$N = 20$")
-# plt.plot(allT30, allKhi30, linestyle="None", marker="*", color = "green", label= "$N = 30$")
-# plt.plot(allT40, allKhi40, linestyle="None", marker="s", color = "red", label= "$N = 40$")
-# plt.legend()
-# plt.xlabel("$T / T_C")
-# plt.ylabel("$ \chi$")
-# plt.savefig("out/KhiAll.pdf")
+plt.figure()
+plt.plot(allT10 / 2.27, allKhi10, linestyle="None", marker="o", color = "black", label= "$N = 10$" )
+plt.plot(allT20 / 2.27, allKhi20, linestyle="None", marker="^", color = "blue", label= "$N = 20$")
+plt.plot(allT30 / 2.27, allKhi30, linestyle="None", marker="*", color = "green", label= "$N = 30$")
+plt.plot(allT40 / 2.27, allKhi40, linestyle="None", marker="s", color = "red", label= "$N = 40$")
+plt.legend()
+plt.xlabel("$T / T_C")
+plt.ylabel("$ \chi$")
+plt.savefig("out/KhiAll.pdf")
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  # Equilibrium Arrival After T MTC
 
