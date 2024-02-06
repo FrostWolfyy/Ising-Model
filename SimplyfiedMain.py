@@ -46,7 +46,7 @@ def susceptibility(magnetizations, beta, size):
 
 @njit
 def cumulant(magnetizations):
-     return 1 - ( np.mean(magnetizations**4) / (3 * np.mean(magnetizations**2)**2) )
+     return 1 - ( np.mean(magnetizations**4) / (3 * (np.mean(magnetizations**2))**2) )
  
 @njit
 def runAnim(lattice, iterations, size, J, beta):
@@ -98,9 +98,9 @@ def runAll(size, Temp, J, kb):
         tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
         tempMagRandom = np.append(tempMagRandom, magnetization(GrilleRandom, size))
         iterations = 0
-        while np.abs(np.mean(tempMagRandom[-10000:]) - np.mean(tempMagUp[-10000:])) > 0.00001:
+        while np.abs(np.mean(tempMagRandom[-10000:]) - np.mean(tempMagUp[-10000:])) > 0.000001:
             iterations += 1
-            if iterations >= 500000:
+            if iterations >= 1000000:
                 print("Maximum iterations reached. Exiting loop.")
                 
                 break
@@ -111,50 +111,187 @@ def runAll(size, Temp, J, kb):
 
         meanMag = (np.mean(tempMagRandom[-10000:]) + np.mean(tempMagUp[-10000:]) ) / 2
         allMag[i] = meanMag
-        allKhi[i] = susceptibility(tempMagRandom, beta, size)
+        allKhi[i] = susceptibility( tempMagUp, beta, size)
 
     return allT, allMag, allKhi
 
-# Test UL
+
+
 # Test Susceptibility 
 
-# size = 32
-# iterations = 1000000
-# kb = 1
-# Temp = 0.05
-# J = 1
+iterations = 5000000
+kb = 1
+Temp = np.array([1.80, 1.90, 2.0, 2.05, 2.10, 2.15, 2.20, 2.225, 2.25, 2.275, 2.30, 2.325, 2.35, 2.375, 2.40, 2.45, 2.50, 2.55, 2.60, 2.70, 2.80, 2.90, 3.00])
+J = 1
+beta = Temp * kb
 
-# Chi = np.zeros(150)
-# UL = np.zeros(150)
-# betaList = np.zeros(150)
-# for i in range(1,151):
+Chi5 = np.zeros(len(Temp))
+Chi10 = np.zeros(len(Temp))
+Chi20 = np.zeros(len(Temp))
+Chi30 = np.zeros(len(Temp))
+
+size = 5
+
+for i in range(1,len(Temp)):
+
+    allMag = np.zeros(iterations)
+    print(i)
+
+    np.random.seed(24032003)
+    grille = np.ones((size, size))
+
+    for j in range(iterations):
+        allMag[j] = magnetization(grille,size)
+        metropolis(grille, beta[i-1], size, J)
+
+    Chi5[i-1] = susceptibility(allMag, beta[i-1], size)
+
+size = 10
+
+for i in range(1,len(Temp)):
+
+    allMag = np.zeros(iterations)
+    print(i)
+
+    np.random.seed(24032003)
+    grille = np.ones((size, size))
+
+    for j in range(iterations):
+        allMag[j] = magnetization(grille,size)
+        metropolis(grille, beta[i-1], size, J)
+
+    Chi10[i-1] = susceptibility(allMag, beta[i-1], size)
+
+size = 20
+
+for i in range(1,len(Temp)):
+
+    allMag = np.zeros(iterations)
+    print(i)
+
+    np.random.seed(24032003)
+    grille = np.ones((size, size))
+
+    for j in range(iterations):
+        allMag[j] = magnetization(grille,size)
+        metropolis(grille, beta[i-1], size, J)
+
+    Chi20[i-1] = susceptibility(allMag, beta[i-1], size)
+
+size = 30
+
+for i in range(1,len(Temp)):
+
+    allMag = np.zeros(iterations)
+    print(i)
+
+    np.random.seed(24032003)
+    grille = np.ones((size, size))
+
+    for j in range(iterations):
+        allMag[j] = magnetization(grille,size)
+        metropolis(grille, beta[i-1], size, J)
+
+    Chi30[i-1] = susceptibility(allMag, beta[i-1], size)
+
+plt.figure()
+plt.plot(Temp / 2.27, Chi5, linestyle = "None", marker=".", color = "black", label = "$N = 5$" ) 
+plt.plot(Temp / 2.27, Chi10, linestyle = "None", marker="x", color = "blue", label = "$N = 10$") 
+plt.plot(Temp / 2.27, Chi20, linestyle = "None", marker="+", color = "green", label = "$N = 20$") 
+plt.plot(Temp / 2.27, Chi30, linestyle = "None", marker="*", color = "red", label = "$N = 30$") 
+plt.legend()
+plt.xlabel("$T / T_C $")
+plt.ylabel("$ \chi $")
+plt.savefig("out/KhiTest.pdf")
+
+# Critical Temp UL
+
+# iterations = 2000000
+# kb = 1
+# Temp = np.array([2.15, 2.20, 2.25, 2.275, 2.30, 2.325])
+# J = 1
+# beta = Temp * kb
+
+# size = 50
+
+# UL50 = np.zeros(len(Temp))
+# UL10 = np.zeros(len(Temp))
+# UL8 = np.zeros(len(Temp))
+# UL20 = np.zeros(len(Temp))
+
+# for i in range(1,len(Temp) + 1):
 
 #     allMag = np.zeros(iterations)
-
 #     print(i)
-#     beta = kb * Temp
-#     beta *= i
 
-#     np.random.seed(24032003)
+#     #np.random.seed(24032003)
 #     grille = np.ones((size, size))
-
+#     #grille = np.random.choice(np.array([-1, 1]), size=(size, size))
 #     for j in range(iterations):
 #         allMag[j] = magnetization(grille,size)
-#         metropolis(grille, beta, size, J)
+#         metropolis(grille, beta[i-1], size, J)
 
-#     betaList[i-1] = beta
-#     Chi[i-1] = susceptibility(allMag, beta)
-#     UL[i-1] = cumulant(allMag)
+#     UL50[i-1] = cumulant(allMag)
 
+
+# size = 10
+# for i in range(1,len(Temp)+1):
+
+#     allMag = np.zeros(iterations)
+#     print(i)
+
+#     #np.random.seed(24032003)
+#     grille = np.ones((size, size))
+#     #grille = np.random.choice(np.array([-1, 1]), size=(size, size))
+#     for j in range(iterations):
+#         allMag[j] = magnetization(grille,size)
+#         metropolis(grille, beta[i-1], size, J)
+
+#     UL10[i-1] = cumulant(allMag)
+
+# size = 8
+# for i in range(1,len(Temp)+1):
+
+#     allMag = np.zeros(iterations)
+#     print(i)
+
+#     #np.random.seed(24032003)
+#     grille = np.ones((size, size))
+#     #grille = np.random.choice(np.array([-1, 1]), size=(size, size))
+#     for j in range(iterations):
+#         allMag[j] = magnetization(grille,size)
+#         metropolis(grille, beta[i-1], size, J)
+
+#     UL8[i-1] = cumulant(allMag)
+
+# size = 20
+# for i in range(1,len(Temp) +1):
+
+#     allMag = np.zeros(iterations)
+#     print(i)
+
+#     #np.random.seed(24032003)
+#     grille = np.ones((size, size))
+#     #grille = np.random.choice(np.array([-1, 1]), size=(size, size))
+#     for j in range(iterations):
+#         allMag[j] = magnetization(grille,size)
+#         metropolis(grille, beta[i-1], size, J)
+
+#     UL20[i-1] = cumulant(allMag)
+
+
+# Diff = 1
+# for i in range (len(Temp)):
+#     if ( np.abs((1 - (UL50[i] / UL10[i]))) < Diff):
+#         TC = Temp[i]
+# print(TC)
 
 # plt.figure()
-# plt.plot(betaList, Chi, linestyle="None", marker=".", color = "black")
-# plt.plot(betaList, UL, linestyle="None", marker=".", color = "black") 
-
+# plt.plot(Temp, UL50 / UL10, marker="+", color = "black")
+# plt.plot(Temp, UL8 / UL20, marker="x", color = "blue")
 # plt.xlabel("Temperature")
-# plt.ylabel("Susceptibility")
-# plt.savefig("out/KhiTest.pdf")
-
+# plt.ylabel("UL")
+# plt.savefig("out/UTest.pdf")
 
 # Animation of spin changing direction over time
 
@@ -226,29 +363,29 @@ def runAll(size, Temp, J, kb):
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Variables
-iterations = 110
+
 kb = 1
-Temp = np.array([0.1, 0.25, 0.40, 0.55, 0.70, 0.85, 1.0, 1.15, 1.30, 1.40, 1.50, 1.60, 1.70, 1.80, 1.90, 2.0, 2.05, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.45, 2.50, 2.55, 2.60, 2.65, 2.70, 2.75, 2.80, 2.90, 3.05, 3.20, 3.35, 3.50, 3.65, 3.80, 3.95 ])
+Temp = np.array([1.40, 1.50, 1.60, 1.70, 1.80, 1.90, 2.0, 2.05, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.45, 2.50, 2.55, 2.60, 2.70, 2.80, 2.90, 3.00, 3.10, 3.20 ])
 J = 1
 beta = kb * Temp
 
-size = 10
+size = 5
 allT10, allMag10, allKhi10 = runAll(size, Temp, J, kb)
 
-size = 20
+size = 10
 allT20, allMag20, allKhi20 = runAll(size, Temp, J, kb)
 
-size = 30
+size = 20
 allT30, allMag30, allKhi30 = runAll(size, Temp, J, kb)
 
-size = 40
+size = 30
 allT40, allMag40, allKhi40 = runAll(size, Temp, J, kb)
 
 plt.figure()
-plt.plot(allT10 / 2.27, allMag10, linestyle="None", marker="o", color = "black", label= "$N = 10$" )
-plt.plot(allT20 / 2.27, allMag20, linestyle="None", marker="^", color = "blue", label= "$N = 20$")
-plt.plot(allT30 / 2.27, allMag30, linestyle="None", marker="*", color = "green", label= "$N = 30$")
-plt.plot(allT40 / 2.27, allMag40, linestyle="None", marker="s", color = "red", label= "$N = 40$")
+plt.plot(allT10 / 2.27, allMag10, linestyle="None", marker=".", color = "black", label= "$N = 5$" )
+plt.plot(allT20 / 2.27, allMag20, linestyle="None", marker="x", color = "blue", label= "$N = 10$")
+plt.plot(allT30 / 2.27, allMag30, linestyle="None", marker="+", color = "green", label= "$N = 20$")
+plt.plot(allT40 / 2.27, allMag40, linestyle="None", marker="*", color = "red", label= "$N = 30$")
 plt.legend()
 plt.xlabel("$T / T_C$")
 plt.ylabel("$ M $")
@@ -256,59 +393,81 @@ plt.savefig("out/MagAll.pdf")
 
 
 plt.figure()
-plt.plot(allT10 / 2.27, allKhi10, linestyle="None", marker="o", color = "black", label= "$N = 10$" )
-plt.plot(allT20 / 2.27, allKhi20, linestyle="None", marker="^", color = "blue", label= "$N = 20$")
-plt.plot(allT30 / 2.27, allKhi30, linestyle="None", marker="*", color = "green", label= "$N = 30$")
-plt.plot(allT40 / 2.27, allKhi40, linestyle="None", marker="s", color = "red", label= "$N = 40$")
+plt.plot(allT10 / 2.27, allKhi10, linestyle="None", marker="o", color = "black", label= "$N = 5$" )
+plt.plot(allT20 / 2.27, allKhi20, linestyle="None", marker="^", color = "blue", label= "$N = 10$")
+plt.plot(allT30 / 2.27, allKhi30, linestyle="None", marker="*", color = "green", label= "$N = 20$")
+plt.plot(allT40 / 2.27, allKhi40, linestyle="None", marker="s", color = "red", label= "$N = 30$")
 plt.legend()
 plt.xlabel("$T / T_C")
 plt.ylabel("$ \chi$")
 plt.savefig("out/KhiAll.pdf")
+
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  # Equilibrium Arrival After T MTC
+
+# size = 32
+# iterations = 1000000
+# kb = 1
+# Temp = 3
+# J = 1
+# beta = kb * Temp
+
+# np.random.seed(24032003)
 
 # count = 0
 # GrilleUp = np.ones((size,size))
 # GrilleRandom = np.random.choice(np.array([-1, 1]), size=(size, size))
 # magUp = [magnetization(GrilleUp, size)]
 # magRandom = [magnetization(GrilleRandom, size)]
-# t_MTC = [count / size**2]
-# while (np.abs(magUp[count] - magRandom[count]) > 0.01):
+# t_MTC = [count]
+
+# magUpGraph = [magnetization(GrilleUp, size)]
+# magRandomGraph = [magnetization(GrilleRandom, size)]
+
+# while (np.abs(np.mean(magUp[-50000:]) - np.mean(magRandom[-50000:]))) > 0.000001:
 #     print(np.abs(magUp[count] - magRandom[count]))
 #     metropolis(GrilleUp, beta, size, J)
 #     metropolis(GrilleRandom, beta, size, J)
 #     count += 1
 #     magUp.append(magnetization(GrilleUp, size))
 #     magRandom.append(magnetization(GrilleRandom, size))
-#     t_MTC.append(count / size**2)
+#     if ((count % 2000) == 0 ):
+#         t_MTC.append(count)
+#         magUpGraph.append(np.mean(magUp[-10000:]))
+#         magRandomGraph.append(np.mean(magRandom[-10000:]))
 
 # plt.figure()
-# plt.plot(t_MTC, magUp, linestyle="None", marker=".", color = "blue")
-# plt.plot(t_MTC, magRandom, linestyle="None", marker=".", color = "black")
+# plt.plot(t_MTC, magUpGraph, marker="None", color = "blue")
+# plt.plot(t_MTC, magRandomGraph, marker="None", color = "black")
 # plt.xlabel("t_MTC")
 # plt.ylabel("Magnetization")
 # plt.savefig("out/Mag.pdf")
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 # count = 0
+
 # GrilleUp = np.ones((size,size))
 # GrilleRandom = np.random.choice(np.array([-1, 1]), size=(size, size))
+
 # magUp = [magnetization(GrilleUp, size)]
 # magRandom = [magnetization(GrilleRandom, size)]
+
 # t_MTC = [count / size**2]
 # for i in range(iterations):
 #     print(i)
 #     metropolis(GrilleUp, beta, size, J)
 #     metropolis(GrilleRandom, beta, size, J)
-#     magUp.append(magnetization(GrilleUp, size))
-#     magRandom.append(magnetization(GrilleRandom, size))
-#     t_MTC.append(i / size**2)
 
+#     if ((i % 20000) == 0 ):
+#         t_MTC.append(i)
+#         magUp.append(magnetization(GrilleUp, size))
+#         magRandom.append(magnetization(GrilleRandom, size))
 # plt.figure()
-# plt.plot(t_MTC[90000,99999], magUp[90000,99999], linestyle="None", marker=".", color = "blue")
-# plt.plot(t_MTC[90000,99999], magRandom[90000,99999], linestyle="None", marker=".", color = "black")
-# plt.xlabel("t_MTC")
-# plt.xscale("log")
+# plt.plot(t_MTC, magUp, marker="None", color = "blue")
+# plt.plot(t_MTC, magRandom, marker="None", color = "black")
+# plt.xlabel("Monte Carlo Step")
+# # plt.xscale("log")
 # plt.ylabel("Magnetization")
 # plt.savefig("out/Mag1.pdf")
 
@@ -318,3 +477,4 @@ plt.savefig("out/KhiAll.pdf")
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
