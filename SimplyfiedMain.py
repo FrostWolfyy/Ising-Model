@@ -38,8 +38,8 @@ def magnetization(lattice, size):
 # Calculate the magnetic susceptibility for a given evolution of magnetization over time, Working Good.
 
 @njit
-def susceptibility(magnetizations, beta):
-     return ( np.mean(magnetizations**2) - np.mean(magnetizations)**2 ) / beta
+def susceptibility(magnetizations, beta, size):
+     return size * ( np.mean(magnetizations**2) - np.mean(magnetizations)**2 ) / beta
 
 # Animate the evolution of spin over time, Working Good.
 
@@ -98,9 +98,11 @@ def runAll(size, TempNumber, initialT, J, kb):
         tempMagUp = np.append(tempMagUp, magnetization(GrilleUp, size))
         tempMagRandom = np.append(tempMagRandom, magnetization(GrilleRandom, size))
         iterations = 0
-        while np.abs(np.mean(tempMagRandom[-1000:]) - np.mean(tempMagUp[-1000:])) > 0.001:
-            if iterations >= 100000:
+        while np.abs(np.mean(tempMagRandom[-10000:]) - np.mean(tempMagUp[-10000:])) > 0.00001:
+            iterations += 1
+            if iterations >= 500000:
                 print("Maximum iterations reached. Exiting loop.")
+
                 break
             metropolis(GrilleUp, beta, size, J)
             metropolis(GrilleRandom, beta, size, J)
@@ -109,49 +111,49 @@ def runAll(size, TempNumber, initialT, J, kb):
 
         meanMag = (magnetization(GrilleUp, size) + magnetization(GrilleRandom, size)) / 2
         allMag[i] = meanMag
-        allKhi[i] = susceptibility(tempMagUp, beta)
+        allKhi[i] = susceptibility(tempMagUp, beta, size)
 
     return allT, allMag, allKhi
 
 # Test UL
 # Test Susceptibility 
 
-size = 32
-iterations = 1000000
-kb = 1
-Temp = 0.05
-J = 1
+# size = 32
+# iterations = 1000000
+# kb = 1
+# Temp = 0.05
+# J = 1
 
-Chi = np.zeros(150)
-UL = np.zeros(150)
-betaList = np.zeros(150)
-for i in range(1,151):
+# Chi = np.zeros(150)
+# UL = np.zeros(150)
+# betaList = np.zeros(150)
+# for i in range(1,151):
 
-    allMag = np.zeros(iterations)
+#     allMag = np.zeros(iterations)
 
-    print(i)
-    beta = kb * Temp
-    beta *= i
+#     print(i)
+#     beta = kb * Temp
+#     beta *= i
 
-    np.random.seed(24032003)
-    grille = np.ones((size, size))
+#     np.random.seed(24032003)
+#     grille = np.ones((size, size))
 
-    for j in range(iterations):
-        allMag[j] = magnetization(grille,size)
-        metropolis(grille, beta, size, J)
+#     for j in range(iterations):
+#         allMag[j] = magnetization(grille,size)
+#         metropolis(grille, beta, size, J)
 
-    betaList[i-1] = beta
-    Chi[i-1] = susceptibility(allMag, beta)
-    UL[i-1] = cumulant(allMag)
+#     betaList[i-1] = beta
+#     Chi[i-1] = susceptibility(allMag, beta)
+#     UL[i-1] = cumulant(allMag)
 
 
-plt.figure()
-plt.plot(betaList, Chi, linestyle="None", marker=".", color = "black")
-plt.plot(betaList, UL, linestyle="None", marker=".", color = "black")
+# plt.figure()
+# plt.plot(betaList, Chi, linestyle="None", marker=".", color = "black")
+# plt.plot(betaList, UL, linestyle="None", marker=".", color = "black")
 
-plt.xlabel("Temperature")
-plt.ylabel("Susceptibility")
-plt.savefig("out/KhiTest.pdf")
+# plt.xlabel("Temperature")
+# plt.ylabel("Susceptibility")
+# plt.savefig("out/KhiTest.pdf")
 
 
 # Animation of spin changing direction over time
@@ -220,31 +222,48 @@ plt.savefig("out/KhiTest.pdf")
 # plt.plot(betaList, mag5, linestyle="None", marker=".", color = "black")
 # plt.xlabel("Temperature")
 # plt.ylabel("Magnetization")
-# plt.savefig("out/Mag_Temp3.pdf")
+# plt.savefig("out/Mag_Temp.pdf")
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# # Variables
-# size = 16
-# iterations = 80
+# size = 10
+# iterations = 110
 # kb = 1
 # Temp = 4
 # J = 1
 # beta = kb * Temp
+# # Variables
 
-# allT, allMag, allKhi = runAll(size, iterations, Temp, J, kb)
+# allT10, allMag10, allKhi10 = runAll(size, iterations, Temp, J, kb)
+# size = 20
+
+# allT20, allMag20, allKhi20 = runAll(size, iterations, Temp, J, kb)
+# size = 30
+
+# allT30, allMag30, allKhi30 = runAll(size, iterations, Temp, J, kb)
+# size = 40
+
+# allT40, allMag40, allKhi40 = runAll(size, iterations, Temp, J, kb)
 
 # plt.figure()
-# plt.plot(allT, allMag, linestyle="None", marker=".", color = "black")
-# plt.xlabel("Temperzture")
-# plt.ylabel("Magnetization")
+# plt.plot(allT10, allMag10, linestyle="None", marker="o", color = "black", label= "$N = 10$" )
+# plt.plot(allT20, allMag20, linestyle="None", marker="^", color = "blue", label= "$N = 20$")
+# plt.plot(allT30, allMag30, linestyle="None", marker="*", color = "green", label= "$N = 30$")
+# plt.plot(allT40, allMag40, linestyle="None", marker="s", color = "red", label= "$N = 40$")
+# plt.legend()
+# plt.xlabel("$T / T_C$")
+# plt.ylabel("$ M $")
 # plt.savefig("out/MagAll.pdf")
 
 
 # plt.figure()
-# plt.plot(allT, allKhi, linestyle="None", marker=".", color = "black")
-# plt.xlabel("Temperzture")
-# plt.ylabel("Susceptibility")
-# plt.savefig("out/Khi.pdf")
+# plt.plot(allT10, allKhi10, linestyle="None", marker="o", color = "black", label= "$N = 10$" )
+# plt.plot(allT20, allKhi20, linestyle="None", marker="^", color = "blue", label= "$N = 20$")
+# plt.plot(allT30, allKhi30, linestyle="None", marker="*", color = "green", label= "$N = 30$")
+# plt.plot(allT40, allKhi40, linestyle="None", marker="s", color = "red", label= "$N = 40$")
+# plt.legend()
+# plt.xlabel("$T / T_C")
+# plt.ylabel("$ \chi$")
+# plt.savefig("out/KhiAll.pdf")
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  # Equilibrium Arrival After T MTC
 
